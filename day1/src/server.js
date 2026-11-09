@@ -2,6 +2,11 @@ import express from "express"
 import dotenv from "dotenv"
 import path from "path";
 import { createClient } from "@supabase/supabase-js"
+import { fileURLToPath } from 'url'
+
+const __filenameNew = fileURLToPath(import.meta.url)
+
+const __dirnameNew = path.dirname(__filenameNew)
 
 
 function main() {
@@ -13,7 +18,7 @@ function main() {
   app.use(express.json());
 
   app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirnameNew, 'index.html'));
   });
 
   app.get("/api/mahasiswa", async function (req, res) {

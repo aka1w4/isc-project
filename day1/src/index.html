@@ -4,8 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kampus</title>
+  <style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
 </head>
 <body>
-  <h1>Hello world</h1>
+  <table style="width:100%">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nim</th>
+        <th>Nama</th>
+     </tr>
+    </thead>
+    <tbody id="hasil"></tbody>
+  </table>
+  <button type="button"><p>Absen</p></button>
+  <script>
+fetch("http://localhost:3030/api/mahasiswa")
+    .then(response => response.json())
+    .then(data => {
+        let html = "";
+
+        data.forEach(user => {
+          html += `<div>
+                      <tr>
+                        <td>${user.id}</td>
+                        <td>${user.nim}</td>
+                        <td>${user.nama}</td>
+                      </tr>
+                   </div>`;
+        });
+
+        document.getElementById("hasil").innerHTML = html;
+    });
+</script>
 </body>
 </html>
