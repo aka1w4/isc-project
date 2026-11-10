@@ -21,38 +21,56 @@ function main() {
     res.sendFile(path.join(__dirnameNew, 'index.html'));
   });
 
+  app.get('/absen', function (req, res) {
+    res.sendFile(path.join(__dirnameNew, 'absen.html'));
+  });
+
   app.get("/api/mahasiswa", async function (req, res) {
-    const { data } = await supabase.from('mahasiswa_now').select('id, nim, nama');
+    const { data } = await supabase.from('mahasiswa_now').select('nim, nama');
 
     res.json(data);
   });
 
   app.post("/api/absen", async function (req, res) {
-    const { status, error } = await supabase.from("absen_now").insert({ data: req.body });
+    const { error } = await supabase.from("absen").insert({ tanggal_absen: req.body.tanggal, data: req.body.absen });
     if (error) {
       res.json({ info: "gagal" });
     } else {
       res.json({ info: "berhasil" });
     }
-  })
+  });
 
   app.get("/api/absen", async function (req, res) {
-    const { data } = await supabase.from("absen_now").select("id, tanggal");
+    const { data } = await supabase.from("absen").select("id, tanggal_absen");
     res.json(data);
-  })
+  });
 
   app.get("/api/absen/:id_absen", async function (req, res) {
-    const { data, error } = await supabase.from("absen_now").select("data").eq("id", req.params.id_absen);
+    const { data: absen } = await supabase.from("absen").select("id, data, tanggal_absen").eq("id", req.params.id_absen);
+    const semuaNim = [...new Set(absen.flatMap(item =>
+      item.data.map(m => m.nim))
+    )];
 
-    if (data?.length == 0 || error) {
-      res.json({});
-    } else {
-      res.json(data);
-    }
-  })
+    const { data: mahasiswa } = await supabase.from("mahasiswa_now").select("nim, nama").in("nim", semuaNim);
+    const mapMahasiswa = new Map(
+      mahasiswa.map(m => [m.nim, m.nama])
+    );
+
+    const dataAbsen = absen.map(item => ({
+      id: item.id,
+      data: item.data.map(m => ({
+        nim: m.nim,
+        nama: mapMahasiswa.get(m.nim) || "",
+        status: m.status
+      })),
+      tanggal_absen: item.tanggal_absen
+    }));
+
+    res.json(dataAbsen)
+  });
 
   app.delete("/api/absen/:id_absen", async function (req, res) {
-    const { error } = await supabase.from("absen_now").delete().eq("id", req.params.id_absen);
+    const { error } = await supabase.from("absen").delete().eq("id", req.params.id_absen);
 
     if (error) {
       res.json({ info: "gagal" });

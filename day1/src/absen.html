@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/tailwindcss@1.9.6/dist/tailwind.min.css" rel="stylesheet">
+  <title>Absen</title>
+</head>
+<body>
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">
+    Absen Kelas: 01TPLP000
+  </h1>
+  <div id="pesan"></div>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-left">
+        <thead>
+          <tr class="bg-blue-600 text-white">
+            <th class="px-6 py-3 border border-gray-300">Nomor</th>
+            <th class="px-6 py-3 border border-gray-300">Nama</th>
+            <th class="px-6 py-3 border border-gray-300">Absen</th>
+          </tr>
+        </thead>
+        <tbody id="data" class="text-gray-700">
+        </tbody>
+      </table>
+    </div>
+    <div class="mb-6">
+      <label class="block text-gray-800 font-bold mb-2">
+        Tanggal Absensi
+      </label>
+      <input
+        type="date"
+        id="tanggal"
+        class="border border-gray-300 rounded-lg px-4 py-2"
+      >      
+    </div>
+    <button
+      type="button"
+      onclick="simpanAbsen()"
+      class="mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
+      Simpan Absen
+    </button>
+    <script>
+    fetch("http://localhost:3030/api/mahasiswa")
+      .then(response => response.json())
+      .then(data => {
+        
+        let html = "";
+        let nomor = 1;
+
+        data.forEach(user => {
+          html += `
+            <tr class="hover:bg-gray-100 transition">
+              <td class="px-6 py-3 border border-gray-300">${nomor}</td>
+              <td class="px-6 py-3 border border-gray-300">${user.nama}</td>
+              <td class="px-6 py-3 border border-gray-300 text-center">
+              <input
+                type="checkbox"
+                class="w-5 h-5"
+                data-id="${user.nim}"
+              >
+              </td>
+            </tr>
+          `;
+          nomor++;
+        });
+
+        document.getElementById("data").innerHTML = html;
+      });
+
+    async function simpanAbsen() {
+      const tanggal = document.getElementById("tanggal").value;
+      const checkbox = document.querySelectorAll('input[type="checkbox"]');
+      const dataAbsen = [];
+      checkbox.forEach(item => {
+        dataAbsen.push({
+          nim: item.dataset.id,
+          status: item.checked ? "hadir" : "tidak hadir"
+        });
+      });
+      
+      const response = await fetch("http://localhost:3030/api/absen", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          tanggal: tanggal,
+          absen: dataAbsen
+        })
+      });
+
+      let pesan = "";
+      const result = await response.json();
+      if (response.ok) {
+        document.querySelectorAll('input[type="checkbox"]').forEach(item => item.checked = false);
+    pesan = `
+        <div class="bg-green-100 text-green-700 p-3 rounded">
+            Absen berhasil
+        </div>
+    `;
+} else {
+    pesan = `
+        <div class="bg-red-100 text-red-700 p-3 rounded">
+            Absen gagal
+        </div>
+    `;
+}
+
+      document.getElementById("pesan").innerHTML = pesan;
+    }
+  </script>
+</body>
+</html>
