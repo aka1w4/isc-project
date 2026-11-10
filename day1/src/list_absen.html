@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/tailwindcss@1.9.6/dist/tailwind.min.css" rel="stylesheet">  
+  <title>Absen</title>
+</head>
+<body>
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">
+      List data Absen Kelas: 01TPLP000
+    </h1>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-left">
+        <thead>
+          <tr class="bg-blue-600 text-white">
+            <th class="px-6 py-3 border border-gray-300">Id</th>
+            <th class="px-6 py-3 border border-gray-300">Tanggal</th>
+            <th class="px-6 py-3 border border-gray-300">Data</th>
+            <th class="px-6 py-3 border border-gray-300">Delete</th>
+          </tr>
+        </thead>
+        <tbody id="hasil" class="text-gray-700">
+        </tbody>
+      </table>
+    </div>
+  <script>
+    fetch("http://localhost:3030/api/absen")
+      .then(response => response.json())
+      .then(data => {
+
+        let html = "";
+        data.forEach(absen => {
+          html += `
+            <tr class="hover:bg-gray-100 transition">
+              <td class="px-6 py-3 border border-gray-300">${absen.id}</td>
+              <td class="px-6 py-3 border border-gray-300">${absen.tanggal_absen}</td>
+              <td class="px-6 py-3 border border-gray-300">
+                <button 
+                type="button" 
+                onclick="lihatAbsen(${absen.id})"  
+                class="mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
+                  Click
+                </button>
+              </tb>
+              <td class="px-6 py-3 border border-gray-300">
+                <button 
+                type="button" 
+                onclick="hapusAbsen(${absen.id})"  
+                class="mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
+                  Delete
+                </button>
+              </tb>
+            </tr>
+          `;
+        });
+
+        document.getElementById("hasil").innerHTML = html;
+      });
+
+    function lihatAbsen(id) {
+      window.location.href = `/absen?id=${id}`;
+    }
+
+    async function hapusAbsen(id) {
+      const response = await fetch(`http://localhost:3030/api/absen/${id}`, {
+            method: "DELETE"
+      });
+
+      if (response.ok) {
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>

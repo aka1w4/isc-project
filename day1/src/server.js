@@ -18,15 +18,27 @@ function main() {
   app.use(express.json());
 
   app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirnameNew, 'index.html'));
+    res.sendFile(path.join(__dirnameNew, "index.html"));
   });
 
-  app.get('/absen', function (req, res) {
-    res.sendFile(path.join(__dirnameNew, 'absen.html'));
+  app.get("/create_absen", function (req, res) {
+    res.sendFile(path.join(__dirnameNew, "create_absen.html"));
+  });
+
+  app.get("/list_absen", function (req, res) {
+    res.sendFile(path.join(__dirnameNew, "list_absen.html"));
+  });
+
+  app.get("/list_absen", function (req, res) {
+    res.sendFile(path.join(__dirnameNew, "list_absen.html"));
+  });
+
+  app.get("/absen", function (req, res) {
+    res.sendFile(path.join(__dirnameNew, "absen.html"));
   });
 
   app.get("/api/mahasiswa", async function (req, res) {
-    const { data } = await supabase.from('mahasiswa_now').select('nim, nama');
+    const { data } = await supabase.from("mahasiswa_now").select("nim, nama");
 
     res.json(data);
   });
