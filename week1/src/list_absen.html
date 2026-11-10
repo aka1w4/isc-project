@@ -25,7 +25,7 @@
       </table>
     </div>
   <script>
-    fetch("http://localhost:3030/api/absen")
+    fetch("/api/absen")
       .then(response => response.json())
       .then(data => {
 
@@ -63,7 +63,7 @@
     }
 
     async function hapusAbsen(id) {
-      const response = await fetch(`http://localhost:3030/api/absen/${id}`, {
+      const response = await fetch(`/api/absen/${id}`, {
             method: "DELETE"
       });
 

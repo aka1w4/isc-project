@@ -28,7 +28,7 @@
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
     
-    fetch(`http://localhost:3030/api/absen/${id}`)
+    fetch(`/api/absen/${id}`)
       .then(response => response.json())
       .then(data => {
 
